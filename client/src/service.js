@@ -18,7 +18,7 @@ const LOCALSTORAGE_VALUES = {
 
 // remove local storage items and log out user
 export const logout = () => {
-  // clearn local storage items
+  // clear local storage items
   for (const property in LOCALSTORAGE_KEYS) {
     window.localStorage.removeItem(LOCALSTORAGE_KEYS[property]);
   }
