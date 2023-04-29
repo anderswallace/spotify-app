@@ -26,6 +26,7 @@ const StyledLoginButton = styled.a`
 
 const login = () => (
   <StyledLoginContainer>
+    <h1>Placeholder Name</h1>
     <StyledLoginButton href="http://localhost:8888/login">
       Log in to Spotify
     </StyledLoginButton>
