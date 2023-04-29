@@ -7,17 +7,8 @@ import {
 } from "react-router-dom";
 import { accessToken, logout, getCurrentUserProfile } from "./service";
 import { catchErrors } from "./utils";
-import styled from "styled-components/macro";
 import { GlobalStyle } from "./styles";
-
-const StyledLoginButton = styled.a`
-  background-color: green;
-  color: white;
-  padding: 10px 20px;
-  margin: 20px auto;
-  border-radius: 30px;
-  display: inline-block;
-`;
+import { Login } from "./pages";
 
 // make page load at top when routing
 function ScrollToTop() {
@@ -50,9 +41,7 @@ function App() {
       <GlobalStyle />
       <header className="App-header">
         {!token ? (
-          <StyledLoginButton href="http://localhost:8888/login">
-            Log in to Spotify
-          </StyledLoginButton>
+          <Login />
         ) : (
           <Router>
             <ScrollToTop />
