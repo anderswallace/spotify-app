@@ -14,6 +14,7 @@ import {
 import { catchErrors } from "./utils";
 import { GlobalStyle } from "./styles";
 import { Login } from "./pages";
+import { Playlist } from "./pages";
 
 // make page load at top when routing
 function ScrollToTop() {
@@ -30,6 +31,7 @@ function App() {
   const [token, setToken] = useState(null);
   const [profile, setProfile] = useState(null);
   const [savedSongs, setSavedSongs] = useState(null);
+  const [savedTrackIDs, setSavedTrackIDs] = useState(null);
 
   useEffect(() => {
     setToken(accessToken);
@@ -43,9 +45,11 @@ function App() {
     // TODO: abstract this function outside of main page
     const fetchLikedSongs = async () => {
       var tracks = [];
+      var trackIDs = [];
       var { data } = await getCurrentUserLikedSongs();
       for (const items in data.items) {
         tracks.push(data.items[items].track);
+        trackIDs.push(data.items[items].track.id);
       }
       var next = data.next;
 
@@ -55,11 +59,13 @@ function App() {
           data = await getCurrentUserLikedSongs(next);
           for (const trackIndex in data.data.items) {
             tracks.push(data.data.items[trackIndex].track);
+            trackIDs.push(data.data.items[trackIndex].track.id);
           }
           next = data.data.next;
         }
       }
       setSavedSongs(tracks);
+      setSavedTrackIDs(trackIDs);
     };
 
     catchErrors(fetchData());
@@ -80,24 +86,7 @@ function App() {
               <Route path="/top-tracks" element={<h1>Top Tracks</h1>}></Route>
               <Route path="/playlists/:id" element={<h1>Playlist</h1>}></Route>
               <Route path="/playlists" element={<h1>Playlists</h1>}></Route>
-              <Route
-                path="/"
-                element={
-                  <>
-                    <button onClick={logout}>Log Out</button>
-
-                    {profile && (
-                      <div>
-                        <h1>{profile.display_name}</h1>
-                        <p>{profile.followers.total} Followers</p>
-                        {profile.images.length && profile.images[0].url && (
-                          <img src={profile.images[0].url} alt="Avatar" />
-                        )}
-                      </div>
-                    )}
-                  </>
-                }
-              ></Route>
+              <Route path="/" element={<Playlist />}></Route>
             </Routes>
           </Router>
         )}
