@@ -124,3 +124,8 @@ axios.defaults.headers["Content-Type"] = "application/json";
 
 // get current user profile as test
 export const getCurrentUserProfile = () => axios.get("/me");
+
+// get current user's liked songs
+export const getCurrentUserLikedSongs = (
+  request = "/me/tracks?limit=50&offset=0"
+) => axios.get(request);

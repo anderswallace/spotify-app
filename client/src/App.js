@@ -5,7 +5,12 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import { accessToken, logout, getCurrentUserProfile } from "./service";
+import {
+  accessToken,
+  logout,
+  getCurrentUserProfile,
+  getCurrentUserLikedSongs,
+} from "./service";
 import { catchErrors } from "./utils";
 import { GlobalStyle } from "./styles";
 import { Login } from "./pages";
@@ -24,6 +29,7 @@ function ScrollToTop() {
 function App() {
   const [token, setToken] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [savedSongs, setSavedSongs] = useState(null);
 
   useEffect(() => {
     setToken(accessToken);
@@ -33,7 +39,31 @@ function App() {
       setProfile(data);
     };
 
+    // retrieve user's saved songs
+    // TODO: abstract this function outside of main page
+    const fetchLikedSongs = async () => {
+      var tracks = [];
+      var { data } = await getCurrentUserLikedSongs();
+      for (const items in data.items) {
+        tracks.push(data.items[items].track);
+      }
+      var next = data.next;
+
+      // if there is a next page, continue looping until no next page remains
+      if (next) {
+        while (next) {
+          data = await getCurrentUserLikedSongs(next);
+          for (const trackIndex in data.data.items) {
+            tracks.push(data.data.items[trackIndex].track);
+          }
+          next = data.data.next;
+        }
+      }
+      setSavedSongs(tracks);
+    };
+
     catchErrors(fetchData());
+    catchErrors(fetchLikedSongs());
   }, []);
 
   return (
