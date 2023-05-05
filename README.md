@@ -2,21 +2,21 @@
 
 Spotify web app to create playlists based on user-provided BPM
 
-## Running this project
+## Installation and configuration
 
 First, install necessary dependencies:
 
-## `npm install`
+`npm install`
 
-Additionally, edit the contents of your `.env` file and replace it with your own `CLIENT_ID` and `CLIENT_SECRET`. You can obtain these from the [Spotify Dashboard](https://developer.spotify.com/dashboard).
+* Additionally, edit the contents of your `.env` file and replace it with your own `CLIENT_ID` and `CLIENT_SECRET`. You can obtain these from the [Spotify Dashboard](https://developer.spotify.com/dashboard).
 
-In the project directory, you can run:
+## Running this project
 
-## `npm start`
+In the main project directory, you can run:
 
-There is a third party library used to concurrently run the server and client, so when you use `npm start` they will both launch.
+`npm start`
+
+There is a third party library used to concurrently run the server and client, so when you run `npm start` they will both launch in one terminal.
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.
