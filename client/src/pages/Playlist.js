@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
 import { catchErrors } from "../utils";
-import { logout, getCurrentUserLikedSongs } from "../service";
+import {
+  logout,
+  getCurrentUserLikedSongs,
+  getTracksAudioFeatures,
+} from "../service";
+import { AsyncButton } from "../Components";
 
 const Playlists = () => {
   const [savedSongs, setSavedSongs] = useState(null);
   const [savedTrackIDs, setSavedTrackIDs] = useState(null);
+  const [trackFeatures, setTrackFeatures] = useState(null);
+  const [tracksBPM, setTracksBPM] = useState(null);
 
+  // TODO: add limit to songs that are requested (maybe 500?)
   const fetchLikedSongs = async () => {
     var tracks = [];
     var trackIDs = [];
@@ -31,15 +39,34 @@ const Playlists = () => {
     setSavedTrackIDs(trackIDs);
   };
 
+  // TODO: add bounds checking for when there are greater than 100 liked songs
+  //       since there is no pagination for getting audio features
+  const getTrackTempos = async () => {
+    if (savedTrackIDs) {
+      var trackTempos = [];
+      var joinedTrackIDs = savedTrackIDs.join(",");
+      var trackData = await getTracksAudioFeatures(joinedTrackIDs);
+      var audioFeatures = trackData.data.audio_features;
+    }
+    setTrackFeatures(audioFeatures);
+    for (const tracks in audioFeatures) {
+      trackTempos.push(Math.round(audioFeatures[tracks].tempo));
+    }
+    setTracksBPM(trackTempos);
+  };
+
   useEffect(() => {
-    catchErrors(fetchLikedSongs());
-  }, []);
+    catchErrors(getTrackTempos());
+  }, [savedTrackIDs]);
 
   return (
     <>
       <div>
         <button onClick={logout}>Log Out</button>
         <h1>PlaylistPage</h1>
+        <AsyncButton onClick={catchErrors(fetchLikedSongs)}>
+          Get Liked Songs
+        </AsyncButton>
       </div>
     </>
   );

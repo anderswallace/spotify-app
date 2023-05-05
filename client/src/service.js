@@ -122,10 +122,14 @@ axios.defaults.baseURL = "https://api.spotify.com/v1";
 axios.defaults.headers["Authorization"] = `Bearer ${accessToken}`;
 axios.defaults.headers["Content-Type"] = "application/json";
 
-// get current user profile as test
+// get current user profile
 export const getCurrentUserProfile = () => axios.get("/me");
 
 // get current user's liked songs
 export const getCurrentUserLikedSongs = (
   request = "/me/tracks?limit=50&offset=0"
 ) => axios.get(request);
+
+// get audio features (tempo, key, etc.) for a list of comma separated track IDs
+export const getTracksAudioFeatures = (tracks) =>
+  axios.get(`/audio-features?ids=${tracks}`);
