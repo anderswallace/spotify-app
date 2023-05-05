@@ -10,8 +10,7 @@ import { AsyncButton } from "../Components";
 const Playlists = () => {
   const [savedSongs, setSavedSongs] = useState(null);
   const [savedTrackIDs, setSavedTrackIDs] = useState(null);
-  const [trackFeatures, setTrackFeatures] = useState(null);
-  const [tracksBPM, setTracksBPM] = useState(null);
+  const [filteredTracks, setFilteredTracks] = useState(null);
 
   // TODO: add limit to songs that are requested (maybe 500?)
   const fetchLikedSongs = async () => {
@@ -48,11 +47,26 @@ const Playlists = () => {
       var trackData = await getTracksAudioFeatures(joinedTrackIDs);
       var audioFeatures = trackData.data.audio_features;
     }
-    setTrackFeatures(audioFeatures);
     for (const tracks in audioFeatures) {
       trackTempos.push(Math.round(audioFeatures[tracks].tempo));
     }
-    setTracksBPM(trackTempos);
+
+    // filter the tracks out by BPMs retrieved
+    filterTracks(trackTempos);
+  };
+
+  const filterTracks = (trackTempos) => {
+    // deep copy to keep state unchanged
+    var tracksData = JSON.parse(JSON.stringify(savedSongs));
+    var filteredSongs = [];
+    // TODO: get this value from the user
+    var targetTempo = 90;
+    for (const track in trackTempos) {
+      if (trackTempos[track] == targetTempo) {
+        filteredSongs.push(tracksData[track]);
+      }
+    }
+    setFilteredTracks(filteredSongs);
   };
 
   useEffect(() => {
