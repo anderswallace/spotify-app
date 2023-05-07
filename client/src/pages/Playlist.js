@@ -11,8 +11,9 @@ const Playlists = () => {
   const [savedSongs, setSavedSongs] = useState(null);
   const [savedTrackIDs, setSavedTrackIDs] = useState(null);
   const [filteredTracks, setFilteredTracks] = useState(null);
+  const [filteredTempos, setFilteredTempos] = useState(null);
+  const [userBPM, setUserBPM] = useState("");
 
-  // TODO: add limit to songs that are requested (maybe 500?)
   const fetchLikedSongs = async () => {
     var tracks = [];
     var trackIDs = [];
@@ -22,16 +23,19 @@ const Playlists = () => {
       trackIDs.push(data.items[items].track.id);
     }
     var next = data.next;
+    var requestedSongs = 50;
 
     // if there is a next page, continue looping until no next page remains
+    // or until 500 songs have been requested
     if (next) {
-      while (next) {
+      while (next && requestedSongs < 500) {
         data = await getCurrentUserLikedSongs(next);
         for (const trackIndex in data.data.items) {
           tracks.push(data.data.items[trackIndex].track);
           trackIDs.push(data.data.items[trackIndex].track.id);
         }
         next = data.data.next;
+        requestedSongs += 50;
       }
     }
     setSavedSongs(tracks);
@@ -46,41 +50,63 @@ const Playlists = () => {
       var joinedTrackIDs = savedTrackIDs.join(",");
       var trackData = await getTracksAudioFeatures(joinedTrackIDs);
       var audioFeatures = trackData.data.audio_features;
-    }
-    for (const tracks in audioFeatures) {
-      trackTempos.push(Math.round(audioFeatures[tracks].tempo));
-    }
 
-    // filter the tracks out by BPMs retrieved
-    filterTracks(trackTempos);
+      for (const tracks in audioFeatures) {
+        trackTempos.push(Math.round(audioFeatures[tracks].tempo));
+      }
+
+      // filter the tracks out by BPMs retrieved
+      filterTracks(trackTempos);
+    }
   };
 
+  // filter out songs that don't match user provided BPM
   const filterTracks = (trackTempos) => {
     // deep copy to keep state unchanged
     var tracksData = JSON.parse(JSON.stringify(savedSongs));
+    var targetTempo = userBPM;
     var filteredSongs = [];
-    // TODO: get this value from the user
-    var targetTempo = 90;
+    var filteredBPM = [];
+
     for (const track in trackTempos) {
       if (trackTempos[track] == targetTempo) {
         filteredSongs.push(tracksData[track]);
+        filteredBPM.push(trackTempos[track]);
       }
     }
     setFilteredTracks(filteredSongs);
+    setFilteredTempos(filteredBPM);
   };
 
   useEffect(() => {
     catchErrors(getTrackTempos());
   }, [savedTrackIDs]);
 
+  function handleBPMSubmit(e) {
+    e.preventDefault();
+    if (userBPM) {
+      catchErrors(fetchLikedSongs());
+    }
+  }
+
+  const handleChange = (e) => {
+    // filter out non-numerical input
+    const value = e.target.value.replace(/\D/g, "");
+    setUserBPM(value);
+  };
+
   return (
     <>
       <div>
         <button onClick={logout}>Log Out</button>
         <h1>PlaylistPage</h1>
-        <AsyncButton onClick={catchErrors(fetchLikedSongs)}>
-          Get Liked Songs
-        </AsyncButton>
+        <form onSubmit={handleBPMSubmit}>
+          <label>
+            Input Tempo:
+            <input value={userBPM} onChange={handleChange} />
+          </label>
+          <button type="submit">Get Liked Songs</button>
+        </form>
       </div>
     </>
   );
