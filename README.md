@@ -1,4 +1,4 @@
-# Spotify Web App
+# Spotify App
 
 Spotify web app to create playlists based on user-provided BPM
 
