@@ -40,6 +40,7 @@ const Playlists = () => {
     }
     setSavedSongs(tracks);
     setSavedTrackIDs(trackIDs);
+    console.log(tracks);
   };
 
   // TODO: add bounds checking for when there are greater than 100 liked songs
@@ -78,9 +79,9 @@ const Playlists = () => {
     setFilteredTempos(filteredBPM);
   };
 
-  useEffect(() => {
-    catchErrors(getTrackTempos());
-  }, [savedTrackIDs]);
+  //useEffect(() => {
+    //catchErrors(getTrackTempos());
+  //}, [savedTrackIDs]);
 
   function handleBPMSubmit(e) {
     e.preventDefault();

@@ -131,5 +131,6 @@ export const getCurrentUserLikedSongs = (
 ) => axios.get(request);
 
 // get audio features (tempo, key, etc.) for a list of comma separated track IDs
+// NOTE: now not supported
 export const getTracksAudioFeatures = (tracks) =>
   axios.get(`/audio-features?ids=${tracks}`);
